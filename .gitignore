@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Entornos virtuales
+venv/
+env/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales de editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Archivos JSON opcionales (si no quieres subir datos)
+# data/datos.json
