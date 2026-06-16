@@ -1,0 +1,1 @@
+la logica y los metodos van aqui en controllers/sistema_control todo lo que es el manej de los objetos

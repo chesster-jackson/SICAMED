@@ -32,9 +32,9 @@ class Paciente(Persona):
     @nombres.setter
     def nombres(self, valor):
         if valor == "" or len(valor) < 2:
-            print(" Nombre inválido")
+            print("Nombre inválido")
             return
-        self._nombres = valor
+        self._nombres = valor 
 
     @property
     def edad(self):
@@ -53,8 +53,8 @@ class Paciente(Persona):
 
     @cedula.setter
     def cedula(self, valor):
-        if not valor.isdigit():
-            print(" Cédula inválida")
+        if valor == "":
+            print("Cédula inválida")
             return
         self._cedula = valor
 

@@ -5,9 +5,9 @@ from model.persona import Persona
 
 class Sistema:
     def __init__(self):
-        self.pacientes = {}   # {"001": Paciente}
-        self.doctores = {}    # {"D01": Doctor}
-        self.citas = []       # [Cita, Cita...]
+        self.pacientes = {}   
+        self.doctores = {}    
+        self.citas = []       
 
     # AGREGAR PACIENTE
     def agregar_paciente(self, paciente):
@@ -94,7 +94,7 @@ class Sistema:
         print(" Medicamento asignado ")
 
     #  ADMINISTRAR MEDICAMENTO
-    def administrar_medicamento(self, cedula, nombre):
+    def administrar_medicamento(self, cedula, nombre,cantidad):
         paciente = self.buscar_paciente(cedula)
 
         if not paciente:
@@ -107,9 +107,10 @@ class Sistema:
                     print(" No hay medicamento ")
                     return
 
-                m.reducir_stock(1)
+                m.reducir_stock(cantidad)
                 paciente.agregar_historial(f"Se administró {m.nombre}")
                 print(" Medicamento administrado ")
+                print(f"Quedan {m.cantidad_stock} unidades")
                 return
 
     #  ALERTAS
