@@ -1,1 +1,62 @@
-[]
+{
+  "pacientes": [
+    {
+      "nombres": "María Elena",
+      "apellidos": "Pérez Gómez",
+      "edad": 68,
+      "cedula": "12345678",
+      "direccion": "Av. Los Alamos 123, San Isidro",
+      "telefono": "987654321",
+      "email": "maria.perez@email.com",
+      "alergias": [
+        "Penicilina"
+      ],
+      "historial": []
+    },
+    {
+      "nombres": "Juan Carlos",
+      "apellidos": "Ramírez López",
+      "edad": 72,
+      "cedula": "87654321",
+      "direccion": "Calle Las Flores 456, Miraflores",
+      "telefono": "987654322",
+      "email": "juan.ramirez@email.com",
+      "alergias": [],
+      "historial": []
+    },
+
+    {
+      "nombres": "Laura",
+      "apellidos": "Sánchez Torres",
+      "edad": 38,
+      "cedula": "22222222",
+      "id_doctor": "CMP-002",
+      "especialidad": "Medicina Interna",
+      "telefono": "987654301",
+      "email": "laura.sanchez@minsa.gob.pe",
+      "citas": []
+    }
+  ],
+  "citas": [
+    {
+      "id": 1,
+      "cedula_paciente": "12345678",
+      "id_doctor": "CMP-001",
+      "fecha": "2026-06-20",
+      "hora": "09:00",
+      "duracion": 60,
+      "estado": "confirmada",
+      "observaciones": "Control de presión arterial"
+    },
+    {
+      "cedula_paciente": "89895555",
+      "id_doctor": "CMP-002",
+      "fecha": "2026-06-17",
+      "hora": "12:00",
+      "duracion": 45,
+      "estado": "pendiente",
+      "observaciones": "t",
+      "id": 2
+    }
+  ]
+}

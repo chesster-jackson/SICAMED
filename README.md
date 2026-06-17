@@ -1,13 +1,16 @@
-# SICAMED
+# SICAMED - Sistema de Gestión del Adulto Mayor
 
-Sistema de gestión del adulto mayor desarrollado en Python.
+## Descripción
+Sistema para la gestión integral de pacientes adultos mayores en centros de salud del MINSA.
 
 ## Estructura
-- model/
-- controllers/
-- view/
+- `main.py`: Punto de entrada de la aplicación
+- `controllers/`: Lógica de negocio y rutas
+- `model/`: Modelos de datos
+- `view/`: Templates y archivos estáticos
+- `data/`: Almacenamiento en JSON
 
-## Tecnologías
-- Python
-- Flask
-- HTML / CSS / JS
+## Instalación
+```bash
+pip install flask flask-cors
+python main.py

@@ -1,54 +1,35 @@
+"""
+Modelo Medicamento
+Representa medicamentos recetados
+"""
+
+
 class Medicamento:
-    def __init__(self, nombre,cantidad_stock):
-        self.nombre = nombre
-        self.__indicaciones = []
-        self._cantidad_stock = cantidad_stock
-
-
+    """Modelo de Medicamento"""
     
-    def agregar_indicacion(self, enfermedad, dosis, frecuencia, duracion):
-        indicacion = {
-            "enfermedad": enfermedad,
-            "dosis": dosis,
-            "frecuencia": frecuencia,
-            "duracion": duracion
+    def __init__(self, id_medicamento, nombre, dosis, 
+                 frecuencia, indicaciones):
+        self.id_medicamento = id_medicamento
+        self.nombre = nombre
+        self.dosis = dosis
+        self.frecuencia = frecuencia
+        self.indicaciones = indicaciones
+    
+    def to_dict(self):
+        return {
+            'id_medicamento': self.id_medicamento,
+            'nombre': self.nombre,
+            'dosis': self.dosis,
+            'frecuencia': self.frecuencia,
+            'indicaciones': self.indicaciones
         }
-        self.__indicaciones.append(indicacion)
-
-
-    def mostrar_indicaciones(self):
-        for i in self.__indicaciones:
-            print(i)
-
-    #getter retornamos la cntidad del stock
-    @property
-    def cantidad_stock(self):
-        return self._cantidad_stock
-
-    #m validar que no sea negativo
-    @cantidad_stock.setter
-    def cantidad_stock(self, valor):
-        if not isinstance(valor, int) or valor < 0:
-            print(" El stock no puede ser negativo")
-            return
-        
-        self._cantidad_stock = valor
-
-    #aumentar la cantidad 
-    def aumentar_stock(self, cantidad):
-        if cantidad <= 0:
-            print(" cantidad inválida")
-            return
-        
-        self._cantidad_stock += cantidad
-        
-    def reducir_stock(self, cantidad):
-        if cantidad <= 0:
-            print(" cantidad inválida")
-            return
-
-        if self._cantidad_stock < cantidad:
-            print(" no hay suficiente stock")
-            return
-
-        self._cantidad_stock -= cantidad
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            id_medicamento=data.get('id_medicamento'),
+            nombre=data.get('nombre'),
+            dosis=data.get('dosis'),
+            frecuencia=data.get('frecuencia'),
+            indicaciones=data.get('indicaciones')
+        )

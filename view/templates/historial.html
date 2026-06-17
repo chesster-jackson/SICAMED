@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-header bg-transparent border-0 pt-4 px-4">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-clock-history fs-3 text-secondary"></i>
+          <div>
+            <h4 class="fw-semibold mb-0">Historial Clínico</h4>
+            <p class="text-muted small mb-0">Registro completo de atenciones médicas</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-4">
+        <!-- Filtros -->
+        <div class="row g-2 mb-4">
+          <div class="col-md-4">
+            <input type="text" class="form-control rounded-3" id="buscarHistorial" placeholder="Buscar por diagnóstico o médico...">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select rounded-3" id="filtroDoctor">
+              <option value="">Todos los médicos</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="date" class="form-control rounded-3" id="filtroFecha">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-outline-secondary rounded-pill w-100" id="btnFiltrar">
+              <i class="bi bi-funnel me-1"></i> Filtrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Fecha</th>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Diagnóstico</th>
+                <th>Tratamiento</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tablaHistorial">
+              <!-- Los datos se cargarán dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3">
+          <p class="text-muted small mb-0" id="infoPaginacion">Mostrando 0 registros</p>
+          <nav aria-label="Navegación de historial">
+            <ul class="pagination pagination-sm mb-0" id="paginacionHistorial">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Anterior</a>
+              </li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
