@@ -1,84 +1,59 @@
-from model.persona import Persona
+"""
+Modelo Paciente - Adulto Mayor (edad >= 60 años)
+"""
 
-class Paciente(Persona):
-    def __init__(self, nombres, apellidos, edad, cedula , direccion , telefono ):
-        super().__init__(nombres, apellidos, edad, cedula)
-
-        self._medicamentos = []
-        self._enfermedades = []
-        self._historial = []
-        self._doctor = None
-        self.direccion = direccion
+class Paciente:
+    """Modelo de Paciente con validación de edad mínima 60 años"""
+    
+    def __init__(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
+        self.nombres = nombres
+        self.apellidos = apellidos
+        self._edad = edad  # Usamos _edad para validar en el setter
+        self.cedula = cedula
         self.telefono = telefono
-
-
-    def agregar_medicamento(self, medicamento):
-        self._medicamentos.append(medicamento)
-        
-
-    def agregar_enfermedad(self, enfermedad):
-        self._enfermedades.append(enfermedad)
-
-    def agregar_historial(self, evento):
-        self._historial.append(evento)
-
-    def asignar_doctor(self, doctor):
-        self._doctor = doctor
-
-    @property
-    def nombres(self):
-        return self._nombres
-
-    @nombres.setter
-    def nombres(self, valor):
-        if valor == "" or len(valor) < 2:
-            print(" Nombre inválido")
-            return
-        self._nombres = valor
-
+        self.direccion = direccion
+        self.email = email
+    
     @property
     def edad(self):
         return self._edad
-
+    
     @edad.setter
     def edad(self, valor):
-        if valor < 0 or valor > 120:
-            print(" Edad inválida")
-            return
-        self._edad = valor
-
+        """Validar que la edad sea mayor o igual a 60"""
+        try:
+            valor = int(valor)
+            if valor < 60:
+                raise ValueError(" La edad del adulto mayor debe ser mayor o igual a 60 años")
+            if valor > 120:
+                raise ValueError(" La edad no puede ser mayor a 120 años")
+            self._edad = valor
+        except ValueError:
+            raise ValueError(" La edad debe ser un número válido")
+    
     @property
-    def cedula(self):
-        return self._cedula
-
-    @cedula.setter
-    def cedula(self, valor):
-        if not valor.isdigit():
-            print(" Cédula inválida")
-            return
-        self._cedula = valor
-
-    @property
-    def apellidos(self):
-        return self._apellidos
-
-    @apellidos.setter
-    def apellidos(self, valor):
-        if valor == "":
-            print(" Apellido inválido")
-            return
-        self._apellidos = valor
-
-    def obtener_datos(self):
+    def nombre_completo(self):
+        return f"{self.nombres} {self.apellidos}"
+    
+    def to_dict(self):
         return {
-            "nombres": self._nombres,
-            "apellidos": self._apellidos,
-            "edad": self._edad,
-            "cedula": self._cedula,
-            "direccion": self.direccion,
-            "telefono": self.telefono,
-            "doctor": self._doctor.nombres if self._doctor else None,
-            "medicamentos": [m.nombre for m in self._medicamentos],
-            "enfermedades": self._enfermedades,
-            "historial": self._historial
+            'nombres': self.nombres,
+            'apellidos': self.apellidos,
+            'edad': self._edad,
+            'cedula': self.cedula,
+            'telefono': self.telefono,
+            'direccion': self.direccion,
+            'email': self.email
         }
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            data.get('nombres', ''),
+            data.get('apellidos', ''),
+            data.get('edad', 60),
+            data.get('cedula', ''),
+            data.get('telefono', ''),
+            data.get('direccion', ''),
+            data.get('email', '')
+        )

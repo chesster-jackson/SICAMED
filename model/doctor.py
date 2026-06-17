@@ -1,19 +1,36 @@
-from model.persona import Persona
-class Doctor(Persona):
-    def __init__(self, nombres, apellidos, edad, cedula, especialidad, id_doctor):
-        super().__init__(nombres, apellidos, edad, cedula)
-        
-        self.especialidad = especialidad
+class Doctor:
+    def __init__(self, nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono):
+        self.nombres = nombres
+        self.apellidos = apellidos
+        self.edad = edad
+        self.cedula = cedula
         self.id_doctor = id_doctor
-
+        self.especialidad = especialidad
+        self.telefono = telefono
+    
     @property
-    def especialidad_doctor(self):
-        return self._especialidad
-
-    @especialidad_doctor.setter
-    def especialidad_doctor(self, valor):
-        if valor == "" or not valor.replace(" ", "").isalpha():
-            print(" Especialidad inválida (solo letras)")
-            return
-
-        self._especialidad = valor
+    def nombre_completo(self):
+        return f"{self.nombres} {self.apellidos}"
+    
+    def to_dict(self):
+        return {
+            'nombres': self.nombres,
+            'apellidos': self.apellidos,
+            'edad': self.edad,
+            'cedula': self.cedula,
+            'id_doctor': self.id_doctor,
+            'especialidad': self.especialidad,
+            'telefono': self.telefono
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            data.get('nombres', ''),
+            data.get('apellidos', ''),
+            data.get('edad', 0),
+            data.get('cedula', ''),
+            data.get('id_doctor', ''),
+            data.get('especialidad', ''),
+            data.get('telefono', '')
+        )

@@ -1,124 +1,195 @@
-from model.cita import Cita
+"""
+Controlador Principal - Lógica de negocio con validaciones
+"""
+
+import json
+import os
 from model.paciente import Paciente
 from model.doctor import Doctor
-from model.persona import Persona
+from model.cita import Cita
 
-class Sistema:
+
+class SistemaControlador:
+    """Controlador principal - Gestiona todas las operaciones del sistema"""
+    
     def __init__(self):
-        self.pacientes = {}   # {"001": Paciente}
-        self.doctores = {}    # {"D01": Doctor}
-        self.citas = []       # [Cita, Cita...]
-
-    # AGREGAR PACIENTE
-    def agregar_paciente(self, paciente):
-        if paciente.cedula in self.pacientes:
-            print(" Paciente ya existe")
-            return
-        
-        self.pacientes[paciente.cedula] = paciente
-        print(" Paciente agregado")
-
-    #  BUSCAR PACIENTE
+        self.pacientes = []
+        self.doctores = []
+        self.citas = []
+        self.archivo = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'datos.json')
+        self.cargar_datos()
+    
+    def cargar_datos(self):
+        """Cargar datos desde JSON"""
+        try:
+            if os.path.exists(self.archivo):
+                with open(self.archivo, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                self.pacientes = [Paciente.from_dict(p) for p in data.get('pacientes', [])]
+                self.doctores = [Doctor.from_dict(d) for d in data.get('doctores', [])]
+                self.citas = [Cita.from_dict(c) for c in data.get('citas', [])]
+        except:
+            self.pacientes = []
+            self.doctores = []
+            self.citas = []
+    
+    def guardar_datos(self):
+        """Guardar datos en JSON"""
+        try:
+            os.makedirs(os.path.dirname(self.archivo), exist_ok=True)
+            data = {
+                'pacientes': [p.to_dict() for p in self.pacientes],
+                'doctores': [d.to_dict() for d in self.doctores],
+                'citas': [c.to_dict() for c in self.citas]
+            }
+            with open(self.archivo, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return True
+        except:
+            return False
+    
+    # ===== CRUD PACIENTES =====
+    
+    def obtener_pacientes(self):
+        return self.pacientes.copy()
+    
     def buscar_paciente(self, cedula):
-        return self.pacientes.get(cedula)
-
-    #  BUSCAR O CREAR PACIENTE
-    def buscar_o_crear_paciente(self, nombres, apellidos, edad, cedula, direccion, telefono):
-        paciente = self.buscar_paciente(cedula)
-
-        if paciente:
-            print(" Paciente encontrado")
-            return paciente
-
-        nuevo = Paciente(nombres, apellidos, edad, cedula, direccion, telefono)
-        self.pacientes[cedula] = nuevo
-        print(" Paciente creado")
-        return nuevo
-
-    #  AGREGAR DOCTOR
-    def agregar_doctor(self, doctor):
-        if doctor.id_doctor in self.doctores:
-            print(" Doctor ya existe")
-            return
+        for p in self.pacientes:
+            if p.cedula == cedula:
+                return p
+        return None
+    
+    def registrar_paciente(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
+        """Registrar nuevo paciente con validación de edad >= 60"""
         
-        self.doctores[doctor.id_doctor] = doctor
-        print(" Doctor agregado")
-
-    #  ASIGNAR DOCTOR
-    def asignar_doctor(self, cedula, id_doctor):
+        # Validar que no exista
+        if self.buscar_paciente(cedula):
+            raise ValueError(f" Ya existe un paciente con cédula {cedula}")
+        
+        # Validar cédula (8 dígitos)
+        if not cedula.isdigit() or len(cedula) != 8:
+            raise ValueError(" La cédula debe tener 8 dígitos")
+        
+        # Validar edad (mayor o igual a 60)
+        try:
+            edad = int(edad)
+            if edad < 60:
+                raise ValueError(" El paciente debe ser mayor de 60 años (Adulto Mayor)")
+            if edad > 120:
+                raise ValueError(" La edad no puede ser mayor a 120 años")
+        except ValueError:
+            raise ValueError(" La edad debe ser un número válido")
+        
+        paciente = Paciente(nombres, apellidos, edad, cedula, telefono, direccion, email)
+        self.pacientes.append(paciente)
+        self.guardar_datos()
+        return paciente
+    
+    def actualizar_paciente(self, cedula, nombres, apellidos, edad, telefono, direccion, email=""):
+        """Actualizar paciente con validación de edad >= 60"""
         paciente = self.buscar_paciente(cedula)
-        doctor = self.doctores.get(id_doctor)
-
-        if not paciente or not doctor:
-            print(" Error paciente o doctor")
-            return
-
-        paciente.asignar_doctor(doctor)
-        print(" Doctor asignado")
-
-    #  CREAR CITA
-    def crear_cita(self, cedula, id_doctor, fecha):
-        paciente = self.buscar_paciente(cedula)
-        doctor = self.doctores.get(id_doctor)
-
-        if not paciente or not doctor:
-            print(" Error al craer cita ")
-            return
-
-        # validar que doctor no esté ocupado
-        for c in self.citas:
-            if c.fecha == fecha and c.doctor.id_doctor == id_doctor:
-                print(" Doctor ocupado ")
-                return
-
-        nueva = Cita(paciente, doctor, fecha)
-        self.citas.append(nueva)
-
-        paciente.agregar_historial(
-            f"Cita el {fecha} con Dr {doctor._nombres} {doctor._apellidos}")
-
-    #  VER CITAS
-    def ver_citas(self):
-        for c in self.citas:
-            print(f"Fecha : {c.fecha},Nombre: {c.paciente.nombres},Cita con:{c.doctor.especialidad} , DR {c.doctor._nombres} {c.doctor._apellidos}")
-
-    #  ASIGNAR MEDICAMENTO
-    def asignar_medicamento(self, cedula, medicamento):
-        paciente = self.buscar_paciente(cedula)
-
         if not paciente:
-            print(" Paciente no existe ")
-            return
-
-        paciente.agregar_medicamento(medicamento)
-        print(" Medicamento asignado ")
-
-    #  ADMINISTRAR MEDICAMENTO
-    def administrar_medicamento(self, cedula, nombre):
+            raise ValueError(" Paciente no encontrado")
+        
+        # Validar edad (mayor o igual a 60)
+        try:
+            edad = int(edad)
+            if edad < 60:
+                raise ValueError(" El paciente debe ser mayor de 60 años (Adulto Mayor)")
+            if edad > 120:
+                raise ValueError(" La edad no puede ser mayor a 120 años")
+        except ValueError:
+            raise ValueError(" La edad debe ser un número válido")
+        
+        paciente.nombres = nombres
+        paciente.apellidos = apellidos
+        paciente.edad = edad
+        paciente.telefono = telefono
+        paciente.direccion = direccion
+        paciente.email = email
+        
+        self.guardar_datos()
+        return paciente
+    
+    def eliminar_paciente(self, cedula):
         paciente = self.buscar_paciente(cedula)
-
         if not paciente:
-            print(" Paciente no existe ")
-            return
-
-        for m in paciente._medicamentos:
-            if m.nombre == nombre:
-                if m.cantidad_stock <= 0:
-                    print(" No hay medicamento ")
-                    return
-
-                m.reducir_stock(1)
-                paciente.agregar_historial(f"Se administró {m.nombre}")
-                print(" Medicamento administrado ")
-                return
-
-    #  ALERTAS
-    def alertas(self, cedula):
-        paciente = self.buscar_paciente(cedula)
-
+            raise ValueError(" Paciente no encontrado")
+        
+        self.pacientes = [p for p in self.pacientes if p.cedula != cedula]
+        self.guardar_datos()
+        return True
+    
+    # ===== CRUD DOCTORES =====
+    
+    def obtener_doctores(self):
+        return self.doctores.copy()
+    
+    def buscar_doctor(self, id_doctor):
+        for d in self.doctores:
+            if d.id_doctor == id_doctor:
+                return d
+        return None
+    
+    def registrar_doctor(self, nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono):
+        """Registrar nuevo doctor"""
+        if self.buscar_doctor(id_doctor):
+            raise ValueError(f" Ya existe un doctor con ID {id_doctor}")
+        
+        # Validar edad del doctor
+        try:
+            edad = int(edad)
+            if edad < 25:
+                raise ValueError(" El doctor debe tener al menos 25 años")
+            if edad > 80:
+                raise ValueError(" La edad del doctor no puede ser mayor a 80 años")
+        except ValueError:
+            raise ValueError(" La edad debe ser un número válido")
+        
+        doctor = Doctor(nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono)
+        self.doctores.append(doctor)
+        self.guardar_datos()
+        return doctor
+    
+    # ===== CRUD CITAS =====
+    
+    def obtener_citas(self):
+        return self.citas.copy()
+    
+    def agendar_cita(self, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
+        """Agendar nueva cita - verifica que el paciente sea adulto mayor"""
+        
+        paciente = self.buscar_paciente(cedula_paciente)
         if not paciente:
-            return
-
-        for m in paciente._medicamentos:
-            if m.cantidad_stock <= 2:
-                print(f" {m.nombre} bajo stock ")
+            raise ValueError(" Paciente no encontrado")
+        
+        # Verificar que el paciente sea adulto mayor
+        if paciente.edad < 60:
+            raise ValueError(" Solo se pueden agendar citas para Adultos Mayores (60+ años)")
+        
+        if not self.buscar_doctor(id_doctor):
+            raise ValueError(" Doctor no encontrado")
+        
+        nuevo_id = max([c.id for c in self.citas]) + 1 if self.citas else 1
+        
+        cita = Cita(nuevo_id, cedula_paciente, id_doctor, fecha, hora, observaciones)
+        self.citas.append(cita)
+        self.guardar_datos()
+        return cita
+    
+    def completar_cita(self, id_cita):
+        cita = next((c for c in self.citas if c.id == id_cita), None)
+        if not cita:
+            raise ValueError(" Cita no encontrada")
+        cita.completar()
+        self.guardar_datos()
+        return cita
+    
+    def cancelar_cita(self, id_cita):
+        cita = next((c for c in self.citas if c.id == id_cita), None)
+        if not cita:
+            raise ValueError(" Cita no encontrada")
+        cita.cancelar()
+        self.guardar_datos()
+        return cita
