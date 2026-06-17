@@ -1,14 +1,7 @@
-"""
-Interfaz de Usuario con Tkinter
-Maneja la interacción con el usuario
-"""
-
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
-
 class VentanaPrincipal:
-    """Ventana principal del sistema"""
     
     def __init__(self, controlador):
         self.controlador = controlador

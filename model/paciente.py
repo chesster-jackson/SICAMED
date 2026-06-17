@@ -1,9 +1,4 @@
-"""
-Modelo Paciente - Adulto Mayor (edad >= 60 años)
-"""
-
 class Paciente:
-    """Modelo de Paciente con validación de edad mínima 60 años"""
     
     def __init__(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
         self.nombres = nombres
@@ -20,7 +15,6 @@ class Paciente:
     
     @edad.setter
     def edad(self, valor):
-        """Validar que la edad sea mayor o igual a 60"""
         try:
             valor = int(valor)
             if valor < 60:

@@ -1,7 +1,3 @@
-"""
-Controlador Principal - Lógica de negocio con validaciones
-"""
-
 import json
 import os
 from model.paciente import Paciente
@@ -10,7 +6,6 @@ from model.cita import Cita
 
 
 class SistemaControlador:
-    """Controlador principal - Gestiona todas las operaciones del sistema"""
     
     def __init__(self):
         self.pacientes = []
@@ -20,7 +15,7 @@ class SistemaControlador:
         self.cargar_datos()
     
     def cargar_datos(self):
-        """Cargar datos desde JSON"""
+
         try:
             if os.path.exists(self.archivo):
                 with open(self.archivo, 'r', encoding='utf-8') as f:
@@ -35,7 +30,7 @@ class SistemaControlador:
             self.citas = []
     
     def guardar_datos(self):
-        """Guardar datos en JSON"""
+
         try:
             os.makedirs(os.path.dirname(self.archivo), exist_ok=True)
             data = {
@@ -49,7 +44,7 @@ class SistemaControlador:
         except:
             return False
     
-    # ===== CRUD PACIENTES =====
+
     
     def obtener_pacientes(self):
         return self.pacientes.copy()
@@ -60,8 +55,10 @@ class SistemaControlador:
                 return p
         return None
     
+
+    #CRUD de pacinetes
     def registrar_paciente(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
-        """Registrar nuevo paciente con validación de edad >= 60"""
+
         
         # Validar que no exista
         if self.buscar_paciente(cedula):
@@ -87,12 +84,12 @@ class SistemaControlador:
         return paciente
     
     def actualizar_paciente(self, cedula, nombres, apellidos, edad, telefono, direccion, email=""):
-        """Actualizar paciente con validación de edad >= 60"""
+    
         paciente = self.buscar_paciente(cedula)
         if not paciente:
             raise ValueError(" Paciente no encontrado")
         
-        # Validar edad (mayor o igual a 60)
+
         try:
             edad = int(edad)
             if edad < 60:
@@ -121,7 +118,7 @@ class SistemaControlador:
         self.guardar_datos()
         return True
     
-    # ===== CRUD DOCTORES =====
+    #  CRUD de dctores 
     
     def obtener_doctores(self):
         return self.doctores.copy()
@@ -133,7 +130,7 @@ class SistemaControlador:
         return None
     
     def registrar_doctor(self, nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono):
-        """Registrar nuevo doctor"""
+
         if self.buscar_doctor(id_doctor):
             raise ValueError(f" Ya existe un doctor con ID {id_doctor}")
         
@@ -158,7 +155,7 @@ class SistemaControlador:
         return self.citas.copy()
     
     def agendar_cita(self, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
-        """Agendar nueva cita - verifica que el paciente sea adulto mayor"""
+
         
         paciente = self.buscar_paciente(cedula_paciente)
         if not paciente:

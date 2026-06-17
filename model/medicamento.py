@@ -28,7 +28,7 @@ class Medicamento:
     #m validar que no sea egativo
     @cantidad_stock.setter
     def cantidad_stock(self, valor):
-        if valor < 0:
+        if not isinstance(valor, int) or valor < 0:
             print(" El stock no puede ser negativo")
             return
         
@@ -36,7 +36,7 @@ class Medicamento:
 
     def aumentar_stock(self, cantidad):
         if cantidad <= 0:
-            print("❌ cantidad inválida")
+            print(" cantidad inválida")
             return
         
         self._cantidad_stock += cantidad

@@ -9,5 +9,5 @@ Sistema de gestión del adulto mayor desarrollado en Python.
 
 ## Tecnologías
 - Python
-- Flask
-- HTML / CSS / JS
+- tkinter
+- Json

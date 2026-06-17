@@ -1,4 +1,5 @@
 class Doctor:
+    
     def __init__(self, nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono):
         self.nombres = nombres
         self.apellidos = apellidos
@@ -7,11 +8,11 @@ class Doctor:
         self.id_doctor = id_doctor
         self.especialidad = especialidad
         self.telefono = telefono
-    
+    #getter = property
     @property
     def nombre_completo(self):
         return f"{self.nombres} {self.apellidos}"
-    
+    #dentro del diccioario
     def to_dict(self):
         return {
             'nombres': self.nombres,

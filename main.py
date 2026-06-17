@@ -1,8 +1,3 @@
-"""
-Punto de entrada de la aplicacion
-SICAMED - Sistema de Gestion del Adulto Mayor
-"""
-
 from controllers.sistema_controlador import SistemaControlador
 from view.interfaz_usuario import VentanaPrincipal
 

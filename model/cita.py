@@ -1,9 +1,4 @@
-"""
-Modelo Cita
-"""
-
 class Cita:
-    """Modelo de Cita"""
     
     def __init__(self, id_cita, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
         self.id = id_cita
@@ -19,7 +14,7 @@ class Cita:
     
     def cancelar(self):
         self.estado = "Cancelada"
-    
+    #diccionario entrada
     def to_dict(self):
         return {
             'id': self.id,
@@ -30,7 +25,7 @@ class Cita:
             'estado': self.estado,
             'observaciones': self.observaciones
         }
-    
+    #diccionario salid
     @classmethod
     def from_dict(cls, data):
         cita = cls(
