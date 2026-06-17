@@ -24,7 +24,6 @@
       "alergias": [],
       "historial": []
     },
-
     {
       "nombres": "Laura",
       "apellidos": "Sánchez Torres",
@@ -35,6 +34,17 @@
       "telefono": "987654301",
       "email": "laura.sanchez@minsa.gob.pe",
       "citas": []
+    },
+    {
+      "nombres": "jefren",
+      "apellidos": "valles",
+      "edad": 60,
+      "cedula": "22228888",
+      "direccion": "leon",
+      "telefono": "88889992",
+      "email": "pacinete2@gmail.com",
+      "alergias": [],
+      "historial": []
     }
   ],
   "citas": [
