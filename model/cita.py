@@ -1,4 +1,5 @@
 class Cita:
+<<<<<<< HEAD
     
     def __init__(self, id_cita, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
         self.id = id_cita
@@ -38,3 +39,26 @@ class Cita:
         )
         cita.estado = data.get('estado', 'Pendiente')
         return cita
+=======
+    def __init__(self, paciente, medico, fecha, hora, diagnostico, resultado):
+        self.paciente = paciente   
+        self.medico = medico      
+        self.fecha = fecha
+        self.hora = hora
+        self.diagnostico = diagnostico
+        self.resultado = resultado
+
+lista_citas = []
+
+def agendar_cita(paciente, medico_asignado, fecha, hora, diagnostico, resultado):
+    nueva_cita = Cita(paciente, medico_asignado, fecha, hora, diagnostico, resultado)
+    lista_citas.append(nueva_cita)
+    return nueva_cita
+
+def eliminar_cita(lista_citas, fecha, hora):
+    for cita in lista_citas:
+        if cita.fecha == fecha and cita.hora == hora:
+            lista_citas.remove(cita)
+            return True
+    return False
+>>>>>>> 76efdd5c945283f0c69e8bf29128fc8f97a0019d
