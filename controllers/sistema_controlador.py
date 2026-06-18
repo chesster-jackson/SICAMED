@@ -1,11 +1,17 @@
+"""
+Controlador Principal - Logica de negocio con validaciones
+"""
+
 import json
 import os
+import re
 from model.paciente import Paciente
 from model.doctor import Doctor
 from model.cita import Cita
 
 
 class SistemaControlador:
+    """Controlador principal - Gestiona todas las operaciones del sistema"""
     
     def __init__(self):
         self.pacientes = []
@@ -14,8 +20,9 @@ class SistemaControlador:
         self.archivo = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'datos.json')
         self.cargar_datos()
     
+    # ===== PERSISTENCIA EN JSON =====
+    
     def cargar_datos(self):
-
         try:
             if os.path.exists(self.archivo):
                 with open(self.archivo, 'r', encoding='utf-8') as f:
@@ -30,7 +37,6 @@ class SistemaControlador:
             self.citas = []
     
     def guardar_datos(self):
-
         try:
             os.makedirs(os.path.dirname(self.archivo), exist_ok=True)
             data = {
@@ -44,7 +50,7 @@ class SistemaControlador:
         except:
             return False
     
-
+    # ===== PACIENTES =====
     
     def obtener_pacientes(self):
         return self.pacientes.copy()
@@ -55,28 +61,31 @@ class SistemaControlador:
                 return p
         return None
     
-
-    #CRUD de pacinetes
     def registrar_paciente(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
-
+        """Registrar paciente - Validacion de cedula unica"""
         
-        # Validar que no exista
+        # Validar que no exista como paciente
         if self.buscar_paciente(cedula):
-            raise ValueError(f" Ya existe un paciente con cédula {cedula}")
+            raise ValueError(f"Ya existe un paciente con cedula {cedula}")
         
-        # Validar cédula (8 dígitos)
-        if not cedula.isdigit() or len(cedula) != 8:
-            raise ValueError(" La cédula debe tener 8 dígitos")
+        # Validar que no exista como doctor
+        if self.buscar_doctor_by_cedula(cedula):
+            raise ValueError(f"La cedula {cedula} ya esta registrada como doctor")
         
-        # Validar edad (mayor o igual a 60)
+        # Validar formato de cedula
+        patron = r'^\d{3}-\d{6}-\d{4}[A-Za-z]$'
+        if not re.match(patron, cedula):
+            raise ValueError("Formato de cedula invalido. Debe ser: 123-123456-1234A")
+        
+        # Validar edad
         try:
             edad = int(edad)
             if edad < 60:
-                raise ValueError(" El paciente debe ser mayor de 60 años (Adulto Mayor)")
+                raise ValueError("El paciente debe ser mayor de 60 años (Adulto Mayor)")
             if edad > 120:
-                raise ValueError(" La edad no puede ser mayor a 120 años")
+                raise ValueError("La edad no puede ser mayor a 120 años")
         except ValueError:
-            raise ValueError(" La edad debe ser un número válido")
+            raise ValueError("La edad debe ser un numero valido")
         
         paciente = Paciente(nombres, apellidos, edad, cedula, telefono, direccion, email)
         self.pacientes.append(paciente)
@@ -84,20 +93,18 @@ class SistemaControlador:
         return paciente
     
     def actualizar_paciente(self, cedula, nombres, apellidos, edad, telefono, direccion, email=""):
-    
         paciente = self.buscar_paciente(cedula)
         if not paciente:
-            raise ValueError(" Paciente no encontrado")
+            raise ValueError("Paciente no encontrado")
         
-
         try:
             edad = int(edad)
             if edad < 60:
-                raise ValueError(" El paciente debe ser mayor de 60 años (Adulto Mayor)")
+                raise ValueError("El paciente debe ser mayor de 60 años (Adulto Mayor)")
             if edad > 120:
-                raise ValueError(" La edad no puede ser mayor a 120 años")
+                raise ValueError("La edad no puede ser mayor a 120 años")
         except ValueError:
-            raise ValueError(" La edad debe ser un número válido")
+            raise ValueError("La edad debe ser un numero valido")
         
         paciente.nombres = nombres
         paciente.apellidos = apellidos
@@ -112,13 +119,13 @@ class SistemaControlador:
     def eliminar_paciente(self, cedula):
         paciente = self.buscar_paciente(cedula)
         if not paciente:
-            raise ValueError(" Paciente no encontrado")
+            raise ValueError("Paciente no encontrado")
         
         self.pacientes = [p for p in self.pacientes if p.cedula != cedula]
         self.guardar_datos()
         return True
     
-    #  CRUD de dctores 
+    # ===== DOCTORES =====
     
     def obtener_doctores(self):
         return self.doctores.copy()
@@ -129,44 +136,115 @@ class SistemaControlador:
                 return d
         return None
     
+    def buscar_doctor_by_cedula(self, cedula):
+        """Buscar doctor por cedula"""
+        for d in self.doctores:
+            if d.cedula == cedula:
+                return d
+        return None
+    
     def registrar_doctor(self, nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono):
-
-        if self.buscar_doctor(id_doctor):
-            raise ValueError(f" Ya existe un doctor con ID {id_doctor}")
+        """Registrar doctor - Edad minima 18 años"""
         
-        # Validar edad del doctor
+        if self.buscar_doctor(id_doctor):
+            raise ValueError(f"Ya existe un doctor con ID {id_doctor}")
+        
+        # Validar que la cedula no pertenezca a un paciente
+        if self.buscar_paciente(cedula):
+            raise ValueError(f"La cedula {cedula} ya esta registrada como paciente")
+        
+        # Validar que la cedula no pertenezca a otro doctor
+        if self.buscar_doctor_by_cedula(cedula):
+            raise ValueError(f"Ya existe un doctor con cedula {cedula}")
+        
+        # Validar edad (18 años minimo)
         try:
             edad = int(edad)
-            if edad < 25:
-                raise ValueError(" El doctor debe tener al menos 25 años")
+            if edad < 18:
+                raise ValueError("El doctor debe tener al menos 18 años")
             if edad > 80:
-                raise ValueError(" La edad del doctor no puede ser mayor a 80 años")
+                raise ValueError("La edad del doctor no puede ser mayor a 80 años")
         except ValueError:
-            raise ValueError(" La edad debe ser un número válido")
+            raise ValueError("La edad debe ser un numero valido")
         
         doctor = Doctor(nombres, apellidos, edad, cedula, id_doctor, especialidad, telefono)
         self.doctores.append(doctor)
         self.guardar_datos()
         return doctor
     
-    # ===== CRUD CITAS =====
+    def actualizar_doctor(self, id_doctor, nombres, apellidos, edad, cedula, especialidad, telefono):
+        """Actualizar datos de un doctor"""
+        doctor = self.buscar_doctor(id_doctor)
+        if not doctor:
+            raise ValueError("Doctor no encontrado")
+        
+        # Validar que la nueva cedula no pertenezca a un paciente
+        if self.buscar_paciente(cedula):
+            raise ValueError(f"La cedula {cedula} ya esta registrada como paciente")
+        
+        # Validar que la nueva cedula no pertenezca a otro doctor
+        otro_doctor = self.buscar_doctor_by_cedula(cedula)
+        if otro_doctor and otro_doctor.id_doctor != id_doctor:
+            raise ValueError(f"Ya existe un doctor con cedula {cedula}")
+        
+        try:
+            edad = int(edad)
+            if edad < 18:
+                raise ValueError("El doctor debe tener al menos 18 años")
+            if edad > 80:
+                raise ValueError("La edad del doctor no puede ser mayor a 80 años")
+        except ValueError:
+            raise ValueError("La edad debe ser un numero valido")
+        
+        doctor.nombres = nombres
+        doctor.apellidos = apellidos
+        doctor.edad = edad
+        doctor.cedula = cedula
+        doctor.especialidad = especialidad
+        doctor.telefono = telefono
+        
+        self.guardar_datos()
+        return doctor
+    
+    def eliminar_doctor(self, id_doctor):
+        doctor = self.buscar_doctor(id_doctor)
+        if not doctor:
+            raise ValueError("Doctor no encontrado")
+        
+        self.doctores = [d for d in self.doctores if d.id_doctor != id_doctor]
+        self.guardar_datos()
+        return True
+    
+    # ===== CITAS =====
     
     def obtener_citas(self):
         return self.citas.copy()
     
     def agendar_cita(self, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
-
-        
         paciente = self.buscar_paciente(cedula_paciente)
         if not paciente:
-            raise ValueError(" Paciente no encontrado")
+            raise ValueError("Paciente no encontrado")
         
-        # Verificar que el paciente sea adulto mayor
         if paciente.edad < 60:
-            raise ValueError(" Solo se pueden agendar citas para Adultos Mayores (60+ años)")
+            raise ValueError("Solo se pueden agendar citas para Adultos Mayores (60+ años)")
         
         if not self.buscar_doctor(id_doctor):
-            raise ValueError(" Doctor no encontrado")
+            raise ValueError("Doctor no encontrado")
+        
+        # Validacion 1: No puede haber 2 citas iguales
+        for c in self.citas:
+            if (c.cedula_paciente == cedula_paciente and 
+                c.id_doctor == id_doctor and 
+                c.fecha == fecha and 
+                c.hora == hora):
+                raise ValueError("Ya existe una cita agendada con el mismo paciente, doctor, fecha y hora")
+        
+        # Validacion 2: No puede haber citas con el mismo doctor a la misma hora
+        for c in self.citas:
+            if (c.id_doctor == id_doctor and 
+                c.fecha == fecha and 
+                c.hora == hora):
+                raise ValueError(f"El doctor ya tiene una cita agendada para el {fecha} a las {hora}")
         
         nuevo_id = max([c.id for c in self.citas]) + 1 if self.citas else 1
         
@@ -178,7 +256,7 @@ class SistemaControlador:
     def completar_cita(self, id_cita):
         cita = next((c for c in self.citas if c.id == id_cita), None)
         if not cita:
-            raise ValueError(" Cita no encontrada")
+            raise ValueError("Cita no encontrada")
         cita.completar()
         self.guardar_datos()
         return cita
@@ -186,7 +264,26 @@ class SistemaControlador:
     def cancelar_cita(self, id_cita):
         cita = next((c for c in self.citas if c.id == id_cita), None)
         if not cita:
-            raise ValueError(" Cita no encontrada")
+            raise ValueError("Cita no encontrada")
         cita.cancelar()
         self.guardar_datos()
         return cita
+    
+    def eliminar_cita(self, id_cita):
+        cita = next((c for c in self.citas if c.id == id_cita), None)
+        if not cita:
+            raise ValueError("Cita no encontrada")
+        self.citas = [c for c in self.citas if c.id != id_cita]
+        self.guardar_datos()
+        return True
+    
+    # ===== ESTADISTICAS =====
+    
+    def contar_pacientes(self):
+        return len(self.pacientes)
+    
+    def contar_doctores(self):
+        return len(self.doctores)
+    
+    def contar_citas(self):
+        return len(self.citas)

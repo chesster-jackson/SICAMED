@@ -1,32 +1,78 @@
+"""
+Modelo Cita
+"""
+
 class Cita:
-<<<<<<< HEAD
+    """Modelo de Cita con atributos privados"""
     
     def __init__(self, id_cita, cedula_paciente, id_doctor, fecha, hora, observaciones=""):
-        self.id = id_cita
-        self.cedula_paciente = cedula_paciente
-        self.id_doctor = id_doctor
-        self.fecha = fecha
-        self.hora = hora
-        self.observaciones = observaciones
-        self.estado = "Pendiente"
+        self.__id = id_cita
+        self.__cedula_paciente = cedula_paciente
+        self.__id_doctor = id_doctor
+        self.__fecha = fecha
+        self.__hora = hora
+        self.__observaciones = observaciones
+        self.__estado = "Pendiente"  # Pendiente, Completada, Cancelada
     
+    # Getters (solo lectura para algunos atributos)
+    @property
+    def id(self):
+        return self.__id
+    
+    @property
+    def cedula_paciente(self):
+        return self.__cedula_paciente
+    
+    @property
+    def id_doctor(self):
+        return self.__id_doctor
+    
+    @property
+    def fecha(self):
+        return self.__fecha
+    
+    @fecha.setter
+    def fecha(self, valor):
+        self.__fecha = valor
+    
+    @property
+    def hora(self):
+        return self.__hora
+    
+    @hora.setter
+    def hora(self, valor):
+        self.__hora = valor
+    
+    @property
+    def estado(self):
+        return self.__estado
+    
+    @estado.setter
+    def estado(self, valor):
+        self.__estado = valor
+    
+    # Metodos para cambiar estado
     def completar(self):
-        self.estado = "Completada"
+        """Cambia el estado a Completada"""
+        self.__estado = "Completada"
     
     def cancelar(self):
-        self.estado = "Cancelada"
-    #diccionario entrada
+        """Cambia el estado a Cancelada"""
+        self.__estado = "Cancelada"
+    
+    # Convertir a diccionario para JSON
     def to_dict(self):
         return {
-            'id': self.id,
-            'cedula_paciente': self.cedula_paciente,
-            'id_doctor': self.id_doctor,
-            'fecha': self.fecha,
-            'hora': self.hora,
-            'estado': self.estado,
-            'observaciones': self.observaciones
+            'id': self.__id,
+            'cedula_paciente': self.__cedula_paciente,
+            'id_doctor': self.__id_doctor,
+            'fecha': self.__fecha,
+            'hora': self.__hora,
+            'estado': self.__estado,
+            'observaciones': self.__observaciones
         }
-    #diccionario salid
+    
+    # Crear Cita desde diccionario
     @classmethod
     def from_dict(cls, data):
         cita = cls(
@@ -37,28 +83,5 @@ class Cita:
             data.get('hora', ''),
             data.get('observaciones', '')
         )
-        cita.estado = data.get('estado', 'Pendiente')
+        cita.__estado = data.get('estado', 'Pendiente')
         return cita
-=======
-    def __init__(self, paciente, medico, fecha, hora, diagnostico, resultado):
-        self.paciente = paciente   
-        self.medico = medico      
-        self.fecha = fecha
-        self.hora = hora
-        self.diagnostico = diagnostico
-        self.resultado = resultado
-
-lista_citas = []
-
-def agendar_cita(paciente, medico_asignado, fecha, hora, diagnostico, resultado):
-    nueva_cita = Cita(paciente, medico_asignado, fecha, hora, diagnostico, resultado)
-    lista_citas.append(nueva_cita)
-    return nueva_cita
-
-def eliminar_cita(lista_citas, fecha, hora):
-    for cita in lista_citas:
-        if cita.fecha == fecha and cita.hora == hora:
-            lista_citas.remove(cita)
-            return True
-    return False
->>>>>>> 76efdd5c945283f0c69e8bf29128fc8f97a0019d

@@ -1,49 +1,76 @@
-<<<<<<< HEAD
-class Paciente:
+"""
+Modelo Paciente - Hereda de Persona
+"""
+
+from model.persona import Persona
+
+
+class Paciente(Persona):
+    """Clase Paciente que hereda de Persona"""
     
     def __init__(self, nombres, apellidos, edad, cedula, telefono, direccion, email=""):
-        self.nombres = nombres
-        self.apellidos = apellidos
-        self._edad = edad  # Usamos _edad para validar en el setter
-        self.cedula = cedula
-        self.telefono = telefono
-        self.direccion = direccion
-        self.email = email
+        # Llamar al constructor de la clase padre
+        super().__init__(nombres, apellidos, edad, cedula)
+        
+        # Atributos privados propios de Paciente
+        self.__telefono = telefono
+        self.__direccion = direccion
+        self.__email = email
+        self.__historial = []  # Lista de citas del paciente
     
+    # Getter y setter para telefono
     @property
-    def edad(self):
-        return self._edad
+    def telefono(self):
+        return self.__telefono
     
-    @edad.setter
-    def edad(self, valor):
-        try:
-            valor = int(valor)
-            if valor < 60:
-                raise ValueError(" La edad del adulto mayor debe ser mayor o igual a 60 años")
-            if valor > 120:
-                raise ValueError(" La edad no puede ser mayor a 120 años")
-            self._edad = valor
-        except ValueError:
-            raise ValueError(" La edad debe ser un número válido")
+    @telefono.setter
+    def telefono(self, valor):
+        self.__telefono = valor.strip() if valor else ""
     
+    # Getter y setter para direccion
     @property
-    def nombre_completo(self):
-        return f"{self.nombres} {self.apellidos}"
+    def direccion(self):
+        return self.__direccion
     
+    @direccion.setter
+    def direccion(self, valor):
+        self.__direccion = valor.strip() if valor else ""
+    
+    # Getter y setter para email
+    @property
+    def email(self):
+        return self.__email
+    
+    @email.setter
+    def email(self, valor):
+        self.__email = valor.strip() if valor else ""
+    
+    # Getter para historial (solo lectura)
+    @property
+    def historial(self):
+        return self.__historial
+    
+    # Metodo para agregar cita al historial
+    def agregar_cita(self, cita):
+        self.__historial.append(cita)
+    
+    # Convertir a diccionario para JSON
     def to_dict(self):
         return {
             'nombres': self.nombres,
             'apellidos': self.apellidos,
-            'edad': self._edad,
+            'edad': self.edad,
             'cedula': self.cedula,
-            'telefono': self.telefono,
-            'direccion': self.direccion,
-            'email': self.email
+            'telefono': self.__telefono,
+            'direccion': self.__direccion,
+            'email': self.__email,
+            'historial': self.__historial
         }
     
+    # Crear Paciente desde diccionario
     @classmethod
     def from_dict(cls, data):
-        return cls(
+        paciente = cls(
             data.get('nombres', ''),
             data.get('apellidos', ''),
             data.get('edad', 60),
@@ -52,25 +79,5 @@ class Paciente:
             data.get('direccion', ''),
             data.get('email', '')
         )
-=======
-class Persona:
-    def __init__(self, nombre, apellido, telefono=None, cedula=None):
-        self.nombre = nombre
-        self.apellido = apellido
-        self.telefono = telefono
-        self.cedula = cedula
-
-class Paciente(Persona):
-    def __init__(self, nombre, apellido, edad, numero_expediente, genero, telefono=None, cedula=None):
-        super().__init__(nombre, apellido, telefono, cedula)
-        self.edad = int(edad)
-        self.numero_expediente = numero_expediente
-        self.genero = genero
-
-lista_pacientes = []
-
-def registrar_paciente_en_sistema(nombre, apellido, edad, numero_expediente, genero):
-    nuevo_paciente = Paciente(nombre, apellido, edad, numero_expediente, genero)
-    lista_pacientes.append(nuevo_paciente)
-    return nuevo_paciente
->>>>>>> 76efdd5c945283f0c69e8bf29128fc8f97a0019d
+        paciente.__historial = data.get('historial', [])
+        return paciente

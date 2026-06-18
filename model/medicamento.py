@@ -1,5 +1,4 @@
 class Medicamento:
-<<<<<<< HEAD
     def __init__(self, nombre,cantidad_stock):
         self.nombre = nombre
         self.__indicaciones = []
@@ -52,7 +51,7 @@ class Medicamento:
             return
 
         self._cantidad_stock -= cantidad
-=======
+
     def __init__(self, nombre, dosis, precio, stock):
         self.nombre = nombre
         self.dosis = dosis
@@ -72,4 +71,4 @@ def eliminar_medicamento_logica(nombre_a_buscar):
             inventario_medicamentos.remove(med)
             return True
     return False
->>>>>>> 76efdd5c945283f0c69e8bf29128fc8f97a0019d
+
